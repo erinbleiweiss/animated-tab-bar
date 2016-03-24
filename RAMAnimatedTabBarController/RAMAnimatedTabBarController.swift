@@ -61,8 +61,8 @@ public class RAMAnimatedTabBarItem: UITabBarItem {
     @IBInspectable var bgSelectedColor: UIColor = UIColor.clearColor()
 
     public var badge: RAMBadge? // use badgeValue to show badge
-    
     public var iconView: (icon: UIImageView, textLabel: UILabel)?
+    private var disabled: Bool = false
     
     public func playAnimation() {
         
@@ -96,6 +96,10 @@ public class RAMAnimatedTabBarItem: UITabBarItem {
     
     public func setItemAnimation(anim: RAMItemAnimation){
         self.animation = anim
+    }
+    
+    public func setDisabled(){
+        self.disabled = true
     }
 }
 
@@ -282,30 +286,32 @@ public class RAMAnimatedTabBarController: UITabBarController {
         viewContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(viewContainer)
         
-        // add gesture
-        let tapGesture = UITapGestureRecognizer(target: self, action: "tapHandler:")
-        tapGesture.numberOfTouchesRequired = 1
-        viewContainer.addGestureRecognizer(tapGesture)
+        if !(self.disabled){
+            // add gesture
+            let tapGesture = UITapGestureRecognizer(target: self, action: "tapHandler:")
+            tapGesture.numberOfTouchesRequired = 1
+            viewContainer.addGestureRecognizer(tapGesture)
         
-        // add constrains
-        let constY = NSLayoutConstraint(item: viewContainer,
-            attribute: NSLayoutAttribute.Bottom,
-            relatedBy: NSLayoutRelation.Equal,
-            toItem: view,
-            attribute: NSLayoutAttribute.Bottom,
-            multiplier: 1,
-            constant: 0)
+            // add constrains
+            let constY = NSLayoutConstraint(item: viewContainer,
+                attribute: NSLayoutAttribute.Bottom,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.Bottom,
+                multiplier: 1,
+                constant: 0)
         
-        view.addConstraint(constY)
+            view.addConstraint(constY)
         
-        let constH = NSLayoutConstraint(item: viewContainer,
-            attribute: NSLayoutAttribute.Height,
-            relatedBy: NSLayoutRelation.Equal,
-            toItem: nil,
-            attribute: NSLayoutAttribute.NotAnAttribute,
-            multiplier: 1,
-            constant: tabBar.frame.size.height)
-        viewContainer.addConstraint(constH)
+            let constH = NSLayoutConstraint(item: viewContainer,
+                attribute: NSLayoutAttribute.Height,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: nil,
+                attribute: NSLayoutAttribute.NotAnAttribute,
+                multiplier: 1,
+                constant: tabBar.frame.size.height)
+            viewContainer.addConstraint(constH)
+        }
         
         return viewContainer
     }
