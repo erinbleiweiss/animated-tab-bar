@@ -93,6 +93,10 @@ public class RAMAnimatedTabBarItem: UITabBarItem {
 
         animation.selectedState(iconView!.icon, textLabel: iconView!.textLabel)
     }
+    
+    public func setItemAnimation(anim: RAMItemAnimation){
+        self.animation = anim
+    }
 }
 
 extension  RAMAnimatedTabBarController {
