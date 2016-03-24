@@ -51,18 +51,18 @@ extension RAMAnimatedTabBarItem {
 
 public class RAMAnimatedTabBarItem: UITabBarItem {
     
-   @IBOutlet public var animation: RAMItemAnimation!
-
+    @IBOutlet public var animation: RAMItemAnimation!
+    
     public var textFont: UIFont = UIFont.systemFontOfSize(10)
     @IBInspectable public var textColor: UIColor = UIColor.blackColor()
     @IBInspectable public var iconColor: UIColor = UIColor.clearColor() // if alpha color is 0 color ignoring
-  
+    
     @IBInspectable var bgDefaultColor: UIColor = UIColor.clearColor() // background color
     @IBInspectable var bgSelectedColor: UIColor = UIColor.clearColor()
-
+    
     public var badge: RAMBadge? // use badgeValue to show badge
+    
     public var iconView: (icon: UIImageView, textLabel: UILabel)?
-    private var disabled: Bool = false
     
     public func playAnimation() {
         
@@ -74,7 +74,7 @@ public class RAMAnimatedTabBarItem: UITabBarItem {
     }
     
     public func deselectAnimation() {
-
+        
         guard animation != nil && iconView != nil else  {
             return
         }
@@ -90,16 +90,8 @@ public class RAMAnimatedTabBarItem: UITabBarItem {
         guard animation != nil && iconView != nil else  {
             return
         }
-
+        
         animation.selectedState(iconView!.icon, textLabel: iconView!.textLabel)
-    }
-    
-    public func setItemAnimation(anim: RAMItemAnimation){
-        self.animation = anim
-    }
-    
-    public func setDisabled(){
-        self.disabled = true
     }
 }
 
@@ -162,10 +154,10 @@ public class RAMAnimatedTabBarController: UITabBarController {
         guard let items = tabBar.items as? [RAMAnimatedTabBarItem] else {
             fatalError("items must inherit RAMAnimatedTabBarItem")
         }
-    
+        
         var index = 0
         for item in items {
-        
+            
             guard let itemImage = item.image else {
                 fatalError("add image icon in UITabBarItem")
             }
@@ -177,7 +169,7 @@ public class RAMAnimatedTabBarController: UITabBarController {
             
             
             let renderMode = CGColorGetAlpha(item.iconColor.CGColor) == 0 ? UIImageRenderingMode.AlwaysOriginal :
-                                                                            UIImageRenderingMode.AlwaysTemplate
+                UIImageRenderingMode.AlwaysTemplate
             
             let icon = UIImageView(image: item.image?.imageWithRenderingMode(renderMode))
             icon.translatesAutoresizingMaskIntoConstraints = false
@@ -191,7 +183,7 @@ public class RAMAnimatedTabBarController: UITabBarController {
             textLabel.font = item.textFont
             textLabel.textAlignment = NSTextAlignment.Center
             textLabel.translatesAutoresizingMaskIntoConstraints = false
-
+            
             container.backgroundColor = (items as [RAMAnimatedTabBarItem])[index].bgDefaultColor
             
             container.addSubview(icon)
@@ -310,7 +302,6 @@ public class RAMAnimatedTabBarController: UITabBarController {
             multiplier: 1,
             constant: tabBar.frame.size.height)
         viewContainer.addConstraint(constH)
-  
         
         return viewContainer
     }
@@ -327,41 +318,46 @@ public class RAMAnimatedTabBarController: UITabBarController {
             return
         }
         
+        
         let currentIndex = gestureView.tag
-        
-        let controller = self.childViewControllers[currentIndex]
-        
-        if let shouldSelect = delegate?.tabBarController?(self, shouldSelectViewController: controller)
-            where !shouldSelect {
-            return
-        }
-
-        if selectedIndex != currentIndex {
-            let animationItem : RAMAnimatedTabBarItem = items[currentIndex]
-            
-            animationItem.playAnimation()
-            
-            let deselectItem = items[selectedIndex]
-
-            let containerPrevious : UIView = deselectItem.iconView!.icon.superview!
-            containerPrevious.backgroundColor = items[currentIndex].bgDefaultColor
-
-            deselectItem.deselectAnimation()
-
-            if !animationItem.disabled{
-                let container : UIView = animationItem.iconView!.icon.superview!
-                container.backgroundColor = items[currentIndex].bgSelectedColor
-            }
-            
-            selectedIndex = gestureView.tag
-            delegate?.tabBarController?(self, didSelectViewController: self)
+        if  let arrayOfTabBarItems = self.tabBar.items as! AnyObject as? NSArray,tabBarItem = arrayOfTabBarItems[currentIndex] as? UITabBarItem {
+            if tabBarItem.enabled {
                 
-
-        } else if selectedIndex == currentIndex {
-            
-            if let navVC = self.viewControllers![selectedIndex] as? UINavigationController {
-                navVC.popToRootViewControllerAnimated(true)
+                
+                let controller = self.childViewControllers[currentIndex]
+                
+                if let shouldSelect = delegate?.tabBarController?(self, shouldSelectViewController: controller)
+                    where !shouldSelect {
+                        return
+                }
+                
+                if selectedIndex != currentIndex {
+                    let animationItem : RAMAnimatedTabBarItem = items[currentIndex]
+                    animationItem.playAnimation()
+                    
+                    let deselectItem = items[selectedIndex]
+                    
+                    let containerPrevious : UIView = deselectItem.iconView!.icon.superview!
+                    containerPrevious.backgroundColor = items[currentIndex].bgDefaultColor
+                    
+                    deselectItem.deselectAnimation()
+                    
+                    let container : UIView = animationItem.iconView!.icon.superview!
+                    container.backgroundColor = items[currentIndex].bgSelectedColor
+                    
+                    selectedIndex = gestureView.tag
+                    delegate?.tabBarController?(self, didSelectViewController: self)
+                    
+                } else if selectedIndex == currentIndex {
+                    
+                    if let navVC = self.viewControllers![selectedIndex] as? UINavigationController {
+                        navVC.popToRootViewControllerAnimated(true)
+                    }
+                }
+                
+                
             }
         }
+        
     }
 }
