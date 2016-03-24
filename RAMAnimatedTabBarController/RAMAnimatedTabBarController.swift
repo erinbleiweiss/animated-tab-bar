@@ -286,32 +286,31 @@ public class RAMAnimatedTabBarController: UITabBarController {
         viewContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(viewContainer)
         
-        if !(self.disabled){
-            // add gesture
-            let tapGesture = UITapGestureRecognizer(target: self, action: "tapHandler:")
-            tapGesture.numberOfTouchesRequired = 1
-            viewContainer.addGestureRecognizer(tapGesture)
+        // add gesture
+        let tapGesture = UITapGestureRecognizer(target: self, action: "tapHandler:")
+        tapGesture.numberOfTouchesRequired = 1
+        viewContainer.addGestureRecognizer(tapGesture)
         
-            // add constrains
-            let constY = NSLayoutConstraint(item: viewContainer,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: view,
-                attribute: NSLayoutAttribute.Bottom,
-                multiplier: 1,
-                constant: 0)
+        // add constrains
+        let constY = NSLayoutConstraint(item: viewContainer,
+            attribute: NSLayoutAttribute.Bottom,
+            relatedBy: NSLayoutRelation.Equal,
+            toItem: view,
+            attribute: NSLayoutAttribute.Bottom,
+            multiplier: 1,
+            constant: 0)
         
-            view.addConstraint(constY)
+        view.addConstraint(constY)
         
-            let constH = NSLayoutConstraint(item: viewContainer,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: nil,
-                attribute: NSLayoutAttribute.NotAnAttribute,
-                multiplier: 1,
-                constant: tabBar.frame.size.height)
-            viewContainer.addConstraint(constH)
-        }
+        let constH = NSLayoutConstraint(item: viewContainer,
+            attribute: NSLayoutAttribute.Height,
+            relatedBy: NSLayoutRelation.Equal,
+            toItem: nil,
+            attribute: NSLayoutAttribute.NotAnAttribute,
+            multiplier: 1,
+            constant: tabBar.frame.size.height)
+        viewContainer.addConstraint(constH)
+  
         
         return viewContainer
     }
@@ -339,20 +338,24 @@ public class RAMAnimatedTabBarController: UITabBarController {
 
         if selectedIndex != currentIndex {
             let animationItem : RAMAnimatedTabBarItem = items[currentIndex]
-            animationItem.playAnimation()
+            if !animationItem.disabled{
+                
+                animationItem.playAnimation()
             
-            let deselectItem = items[selectedIndex]
+                let deselectItem = items[selectedIndex]
 
-            let containerPrevious : UIView = deselectItem.iconView!.icon.superview!
-            containerPrevious.backgroundColor = items[currentIndex].bgDefaultColor
+                let containerPrevious : UIView = deselectItem.iconView!.icon.superview!
+                containerPrevious.backgroundColor = items[currentIndex].bgDefaultColor
 
-            deselectItem.deselectAnimation()
+                deselectItem.deselectAnimation()
 
-            let container : UIView = animationItem.iconView!.icon.superview!
-            container.backgroundColor = items[currentIndex].bgSelectedColor
+                let container : UIView = animationItem.iconView!.icon.superview!
+                container.backgroundColor = items[currentIndex].bgSelectedColor
             
-            selectedIndex = gestureView.tag
-            delegate?.tabBarController?(self, didSelectViewController: self)
+                selectedIndex = gestureView.tag
+                delegate?.tabBarController?(self, didSelectViewController: self)
+                
+            }
 
         } else if selectedIndex == currentIndex {
             
