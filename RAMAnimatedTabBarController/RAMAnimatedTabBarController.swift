@@ -338,24 +338,24 @@ public class RAMAnimatedTabBarController: UITabBarController {
 
         if selectedIndex != currentIndex {
             let animationItem : RAMAnimatedTabBarItem = items[currentIndex]
-            if !animationItem.disabled{
-                
-                animationItem.playAnimation()
             
-                let deselectItem = items[selectedIndex]
+            animationItem.playAnimation()
+            
+            let deselectItem = items[selectedIndex]
 
-                let containerPrevious : UIView = deselectItem.iconView!.icon.superview!
-                containerPrevious.backgroundColor = items[currentIndex].bgDefaultColor
+            let containerPrevious : UIView = deselectItem.iconView!.icon.superview!
+            containerPrevious.backgroundColor = items[currentIndex].bgDefaultColor
 
-                deselectItem.deselectAnimation()
+            deselectItem.deselectAnimation()
 
+            if !animationItem.disabled{
                 let container : UIView = animationItem.iconView!.icon.superview!
                 container.backgroundColor = items[currentIndex].bgSelectedColor
-            
-                selectedIndex = gestureView.tag
-                delegate?.tabBarController?(self, didSelectViewController: self)
-                
             }
+            
+            selectedIndex = gestureView.tag
+            delegate?.tabBarController?(self, didSelectViewController: self)
+                
 
         } else if selectedIndex == currentIndex {
             
